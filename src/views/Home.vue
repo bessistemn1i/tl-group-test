@@ -1,14 +1,8 @@
 <template>
   <div class="home">
     <div id="nav" class="nav">
-      <router-link tag="button" class="nav-link" to="/">Главная</router-link> |
-      <router-link
-        tag="button"
-        :disabled="!isFiltersSaved"
-        class="nav-link"
-        :to="{ name: 'UpdatedTable', params: tableParams }"
-        >Таблица c фильтрами</router-link
-      >
+      <router-link tag="button" class="nav-link" to="/">Главная</router-link>
+      <a class="nav-link" :class="!isFiltersSaved ? 'nav-link__disabled' : ''" :href="'/sorted-table/?' + this.href">Таблица c фильтрами</a>
     </div>
     <ProgressOfUsers @updateTableParams="updateTableParams" />
   </div>
@@ -23,6 +17,7 @@ export default {
     return {
       tableParams: {},
       isFiltersSaved: false,
+      href: '',
     };
   },
   components: {
@@ -31,6 +26,14 @@ export default {
   methods: {
     updateTableParams(params) {
       this.tableParams = params;
+      for (const key in this.tableParams) {
+        if (Object.hasOwnProperty.call(this.tableParams, key)) {
+          const element = this.tableParams[key];
+          if (element !== undefined) {
+            this.href += `${key}=${element}&`;
+          }
+        }
+      }
       this.isFiltersSaved = params.isFiltersSaved;
     },
   },
@@ -55,5 +58,11 @@ export default {
   border: none;
   text-decoration: none;
   cursor: pointer;
+}
+
+.nav-link__disabled {
+  cursor: pointer;
+  pointer-events: none;
+  color: #ccc;
 }
 </style>

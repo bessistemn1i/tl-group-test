@@ -57,7 +57,7 @@
         <button class="filters-btn" v-on:click="clearFilters()">
           Очистить фильтр
         </button>
-        <button class="filters-btn" v-on:click="saveFilters()">
+        <button :disabled="isFiltersSaved" class="filters-btn" v-on:click="saveFilters()">
           {{ isFiltersSaved ? 'Сохранено' : 'Сохранить фильтры' }}
         </button>
       </div>
@@ -69,17 +69,17 @@
         <thead>
           <tr class="table-tr">
             <th>
-              <button v-on:click="sortTable(currentTypeOfSortNumber, 'place')">
+              <button v-on:click="sortTable('moreToLess', 'place')">
                 Место
                 <span
                   v-if="
-                    currentTypeOfSortNumber === 'moreToLess' &&
+                    currentTypeOfSort === 'moreToLess' &&
                       currentTableCell === 'place'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSortNumber === 'lessToMore' &&
+                    currentTypeOfSort === 'lessToMore' &&
                       currentTableCell === 'place'
                   "
                   >↑</span
@@ -87,20 +87,16 @@
               </button>
             </th>
             <th>
-              <button
-                v-on:click="sortTable(currentTypeOfSortAlphabet, 'login')"
-              >
+              <button v-on:click="sortTable('az', 'login')">
                 Логин
                 <span
                   v-if="
-                    currentTypeOfSortAlphabet === 'az' &&
-                      currentTableCell === 'login'
+                    currentTypeOfSort === 'az' && currentTableCell === 'login'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSortAlphabet === 'za' &&
-                      currentTableCell === 'login'
+                    currentTypeOfSort === 'za' && currentTableCell === 'login'
                   "
                   >↑</span
                 ><span v-else>↕</span>
@@ -108,20 +104,18 @@
             </th>
             <th>
               <button
-                v-on:click="
-                  sortTable(currentTypeOfSortNumber, 'numberOfConfirmedOrders')
-                "
+                v-on:click="sortTable('moreToLess', 'numberOfConfirmedOrders')"
               >
                 Подтвежденные заказы
                 <span
                   v-if="
-                    currentTypeOfSortNumber === 'moreToLess' &&
+                    currentTypeOfSort === 'moreToLess' &&
                       currentTableCell === 'numberOfConfirmedOrders'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSortNumber === 'lessToMore' &&
+                    currentTypeOfSort === 'lessToMore' &&
                       currentTableCell === 'numberOfConfirmedOrders'
                   "
                   >↑</span
@@ -129,20 +123,16 @@
               </button>
             </th>
             <th>
-              <button
-                v-on:click="sortTable(currentTypeOfSortAlphabet, 'status')"
-              >
+              <button v-on:click="sortTable('az', 'status')">
                 Статус
                 <span
                   v-if="
-                    currentTypeOfSortAlphabet === 'az' &&
-                      currentTableCell === 'status'
+                    currentTypeOfSort === 'az' && currentTableCell === 'status'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSortAlphabet === 'za' &&
-                      currentTableCell === 'status'
+                    currentTypeOfSort === 'za' && currentTableCell === 'status'
                   "
                   >↑</span
                 ><span v-else>↕</span>
@@ -210,9 +200,8 @@ export default {
           status: 'Ценитель красоты',
         },
       ],
-      currentTypeOfSortNumber: '',
+      currentTypeOfSort: '',
       currentTableCell: '',
-      currentTypeOfSortAlphabet: '',
       currentFilterBySelect: '',
       currentFilterByLogin: '',
       numberOfOrdersFrom: 0,
@@ -225,9 +214,8 @@ export default {
   },
 
   created() {
-    this.currentTypeOfSortNumber = 'moreToLess';
+    this.currentTypeOfSort = '';
     this.currentTableCell = '';
-    this.currentTypeOfSortAlphabet = 'az';
     this.currentFilterBySelect = null;
     this.currentFilterByLogin = '';
     this.numberOfOrdersFrom = 0;
@@ -236,56 +224,66 @@ export default {
   },
 
   methods: {
-    sortTable(currentTypeOfSortNumber, currentTableCell) {
+    sortTable(currentTypeOfSort, currentTableCell) {
+      let sort =
+        this.currentTypeOfSort.length > 0
+          ? this.currentTypeOfSort
+          : currentTypeOfSort;
       let newUsers = '';
-      switch (currentTypeOfSortNumber) {
-        case 'lessToMore':
-          newUsers = this.filtredTable.sort(
-            (prev, next) =>
-              prev[`${currentTableCell}`] - next[`${currentTableCell}`]
-          );
-          this.currentTypeOfSortNumber = 'moreToLess';
-          this.currentTableCell = currentTableCell;
+      switch (currentTableCell) {
+        case 'place':
+        case 'numberOfConfirmedOrders':
+          if (sort === 'lessToMore') {
+            newUsers = this.filtredTable.sort(
+              (prev, next) =>
+                prev[`${currentTableCell}`] - next[`${currentTableCell}`]
+            );
+            this.currentTypeOfSort = 'moreToLess';
+            this.currentTableCell = currentTableCell;
+          } else {
+            newUsers = this.filtredTable.sort(
+              (prev, next) =>
+                next[`${currentTableCell}`] - prev[`${currentTableCell}`]
+            );
+            this.currentTypeOfSort = 'lessToMore';
+            this.currentTableCell = currentTableCell;
+          }
           break;
-        case 'moreToLess':
-          newUsers = this.filtredTable.sort(
-            (prev, next) =>
-              next[`${currentTableCell}`] - prev[`${currentTableCell}`]
-          );
-          this.currentTypeOfSortNumber = 'lessToMore';
-          this.currentTableCell = currentTableCell;
-          break;
-        case 'az':
-          newUsers = this.filtredTable.sort((prev, next) => {
-            if (
-              prev[`${currentTableCell}`].toLowerCase() <
-              next[`${currentTableCell}`].toLowerCase()
-            )
-              return -1;
-            if (
-              prev[`${currentTableCell}`].toLowerCase() >
-              next[`${currentTableCell}`].toLowerCase()
-            )
-              return 1;
-          });
-          this.currentTypeOfSortAlphabet = 'za';
-          this.currentTableCell = currentTableCell;
+        case 'login':
+        case 'status':
+          if (sort === 'az') {
+            newUsers = this.filtredTable.sort((prev, next) => {
+              if (
+                prev[`${currentTableCell}`].toLowerCase() <
+                next[`${currentTableCell}`].toLowerCase()
+              )
+                return -1;
+              if (
+                prev[`${currentTableCell}`].toLowerCase() >
+                next[`${currentTableCell}`].toLowerCase()
+              )
+                return 1;
+            });
+            this.currentTypeOfSort = 'za';
+            this.currentTableCell = currentTableCell;
+          } else {
+            newUsers = this.users.sort((prev, next) => {
+              if (
+                prev[`${currentTableCell}`].toLowerCase() >
+                next[`${currentTableCell}`].toLowerCase()
+              )
+                return -1;
+              if (
+                prev[`${currentTableCell}`].toLowerCase() <
+                next[`${currentTableCell}`].toLowerCase()
+              )
+                return 1;
+            });
+            this.currentTypeOfSort = 'az';
+            this.currentTableCell = currentTableCell;
+          }
           break;
         case 'za':
-          newUsers = this.users.sort((prev, next) => {
-            if (
-              prev[`${currentTableCell}`].toLowerCase() >
-              next[`${currentTableCell}`].toLowerCase()
-            )
-              return -1;
-            if (
-              prev[`${currentTableCell}`].toLowerCase() <
-              next[`${currentTableCell}`].toLowerCase()
-            )
-              return 1;
-          });
-          this.currentTypeOfSortAlphabet = 'az';
-          this.currentTableCell = currentTableCell;
           break;
         default:
           newUsers = 'default';
@@ -356,6 +354,8 @@ export default {
     saveFilters() {
       this.isFiltersSaved = true;
       this.routeParams.isFiltersSaved = this.isFiltersSaved;
+      this.routeParams.currentTypeOfSort = this.currentTypeOfSort;
+      this.routeParams.currentTableCell = this.currentTableCell;
       this.$emit('updateTableParams', this.routeParams);
     },
 
@@ -364,7 +364,7 @@ export default {
       this.numberOfOrdersFrom = 0;
       this.numberOfOrdersBefore = 0;
       this.currentTableCell = '';
-      this.currentTypeOfSortAlphabet = '';
+      this.currentTypeOfSort = '';
       this.currentFilterBySelect = null;
       this.currentFilterByLogin = '';
       this.isFiltersSaved = false;
@@ -410,6 +410,12 @@ tr:hover td {
 }
 
 .table-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container-centered {
   display: flex;
   flex-direction: column;
   align-items: center;
