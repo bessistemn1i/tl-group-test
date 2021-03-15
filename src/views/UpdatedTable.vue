@@ -62,17 +62,17 @@
           <thead>
             <tr class="table-tr">
               <th>
-                <button v-on:click="sortTable('moreToLess', 'place')">
+                <button v-on:click="sortTable('az', 'place')">
                   Место
                   <span
                     v-if="
-                      currentTypeOfSort === 'moreToLess' &&
+                      currentTypeOfSort === 'az' &&
                         currentTableCell === 'place'
                     "
                     >↓</span
                   ><span
                     v-else-if="
-                      currentTypeOfSort === 'lessToMore' &&
+                      currentTypeOfSort === 'za' &&
                         currentTableCell === 'place'
                     "
                     >↑</span
@@ -98,19 +98,19 @@
               <th>
                 <button
                   v-on:click="
-                    sortTable('moreToLess', 'numberOfConfirmedOrders')
+                    sortTable('az', 'numberOfConfirmedOrders')
                   "
                 >
                   Подтвежденные заказы
                   <span
                     v-if="
-                      currentTypeOfSort === 'moreToLess' &&
+                      currentTypeOfSort === 'az' &&
                         currentTableCell === 'numberOfConfirmedOrders'
                     "
                     >↓</span
                   ><span
                     v-else-if="
-                      currentTypeOfSort === 'lessToMore' &&
+                      currentTypeOfSort === 'za' &&
                         currentTableCell === 'numberOfConfirmedOrders'
                     "
                     >↑</span
@@ -219,6 +219,7 @@ export default {
     this.currentFilterBySelect = this.$route.query.currentFilterBySelect;
     this.numberOfOrdersFrom = +this.$route.query.filtredByOderStart;
     this.numberOfOrdersBefore = +this.$route.query.filtredByOderEnd;
+    this.filtredTable = this.users;
     if (this.currentFilterByLogin && this.currentFilterByLogin.length > 0) {
       this.filtredByLogin();
     }
@@ -243,19 +244,19 @@ export default {
       switch (currentTableCell) {
         case 'place':
         case 'numberOfConfirmedOrders':
-          if (sort === 'lessToMore') {
+          if (sort === 'za') {
             newUsers = this.filtredTable.sort(
               (prev, next) =>
                 next[`${currentTableCell}`] - prev[`${currentTableCell}`]
             );
-            this.currentTypeOfSort = 'moreToLess';
+            this.currentTypeOfSort = 'az';
             this.currentTableCell = currentTableCell;
-          } else if (sort === 'moreToLess') {
+          } else if (sort === 'az') {
             newUsers = this.filtredTable.sort(
               (prev, next) =>
                 prev[`${currentTableCell}`] - next[`${currentTableCell}`]
             );
-            this.currentTypeOfSort = 'lessToMore';
+            this.currentTypeOfSort = 'za';
             this.currentTableCell = currentTableCell;
           }
           break;

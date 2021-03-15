@@ -69,17 +69,17 @@
         <thead>
           <tr class="table-tr">
             <th>
-              <button v-on:click="sortTable('moreToLess', 'place')">
+              <button v-on:click="sortTable('az', 'place')">
                 Место
                 <span
                   v-if="
-                    currentTypeOfSort === 'moreToLess' &&
+                    currentTypeOfSort === 'az' &&
                       currentTableCell === 'place'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSort === 'lessToMore' &&
+                    currentTypeOfSort === 'za' &&
                       currentTableCell === 'place'
                   "
                   >↑</span
@@ -104,18 +104,18 @@
             </th>
             <th>
               <button
-                v-on:click="sortTable('moreToLess', 'numberOfConfirmedOrders')"
+                v-on:click="sortTable('az', 'numberOfConfirmedOrders')"
               >
                 Подтвежденные заказы
                 <span
                   v-if="
-                    currentTypeOfSort === 'moreToLess' &&
+                    currentTypeOfSort === 'az' &&
                       currentTableCell === 'numberOfConfirmedOrders'
                   "
                   >↓</span
                 ><span
                   v-else-if="
-                    currentTypeOfSort === 'lessToMore' &&
+                    currentTypeOfSort === 'za' &&
                       currentTableCell === 'numberOfConfirmedOrders'
                   "
                   >↑</span
@@ -233,19 +233,19 @@ export default {
       switch (currentTableCell) {
         case 'place':
         case 'numberOfConfirmedOrders':
-          if (sort === 'lessToMore') {
+          if (sort === 'za') {
             newUsers = this.filtredTable.sort(
               (prev, next) =>
                 prev[`${currentTableCell}`] - next[`${currentTableCell}`]
             );
-            this.currentTypeOfSort = 'moreToLess';
+            this.currentTypeOfSort = 'az';
             this.currentTableCell = currentTableCell;
           } else {
             newUsers = this.filtredTable.sort(
               (prev, next) =>
                 next[`${currentTableCell}`] - prev[`${currentTableCell}`]
             );
-            this.currentTypeOfSort = 'lessToMore';
+            this.currentTypeOfSort = 'za';
             this.currentTableCell = currentTableCell;
           }
           break;
